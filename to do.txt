@@ -1,0 +1,4 @@
+* Get it working on Amazon EC2 w/ Virtualenvs
+* Add doc strings
+* Reorg order of functions
+* Add readme

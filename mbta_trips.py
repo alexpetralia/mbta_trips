@@ -1,10 +1,9 @@
 # @author: apetralia
 
 # TODO: write docstrings
-# TODO: after 1:30am on a weekday, what is the json response? does it have ['mode']
 
 import os
-BASE_DIR = "C:\\Users\\apetralia\\Desktop\\mbta"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(BASE_DIR)
 
 from datetime import datetime as dt

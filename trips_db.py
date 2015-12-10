@@ -1,7 +1,3 @@
-import os
-BASE_DIR = "C:\\Users\\apetralia\\Desktop\\mbta"
-os.chdir(BASE_DIR)
-
 import sqlite3
 from settings.settings import DATABASE_PATH, TABLE_ONE, TABLE_TWO 
 

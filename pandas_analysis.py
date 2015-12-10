@@ -1,5 +1,5 @@
 import os
-BASE_DIR = "C:\\Users\\apetralia\\Desktop\\mbta"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(BASE_DIR)
 
 import pandas as pd

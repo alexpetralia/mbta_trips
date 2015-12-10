@@ -1,6 +1,8 @@
-import settings.api_key as API_KEY
+import os
 
-BASE_DIR = "C:\\Users\\apetralia\\Desktop\\mbta"
+from settings.api_key import API_KEY
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__ + "\\.."))
 DATABASE_PATH = BASE_DIR + "\\mbta_trips.db"
 
 TABLE_ONE = "completed_trip_history"
