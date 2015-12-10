@@ -1,7 +1,5 @@
 import os
 
-from settings.api_key import API_KEY
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__ + "\\.."))
 DATABASE_PATH = BASE_DIR + "\\mbta_trips.db"
 
