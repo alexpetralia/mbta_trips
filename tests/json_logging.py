@@ -1,5 +1,5 @@
 import os
-BASE_DIR = os.path.dirname(os.path.abspath(__file__ + "\\.."))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__ + "/../"))
 os.chdir(BASE_DIR)
 
 from datetime import datetime as dt, time
@@ -25,11 +25,11 @@ while True:
     
     while in_between(curr_time, start_time, end_time):
     
-        JSON_DUMPS_PATH = BASE_DIR + "\\logs\\json_dumps"
+        JSON_DUMPS_PATH = BASE_DIR + "logs/json_dumps"
         if not os.path.exists(JSON_DUMPS_PATH):
             os.mkdir(JSON_DUMPS_PATH)
             
-        logger = init_logging("\\json_dumps\\" + dt.today().now().strftime('%Y-%m-%d,%H.%M.%S'))
+        logger = init_logging("/json_dumps/" + dt.today().now().strftime('%Y-%m-%d,%H.%M.%S'))
     
         BASE_URL = 'http://realtime.mbta.com/developer/api/v2/' \
                'vehiclesbyroutes?api_key=%s&routes=%s&format=json' % (API_KEY, ROUTES)
