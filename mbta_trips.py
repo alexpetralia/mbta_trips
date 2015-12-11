@@ -200,14 +200,14 @@ def get_json(url, logger):
             time.sleep(10)
     
 def init_logging(logname):
-    LOGS_PATH = BASE_DIR + "\\\logs"
+    LOGS_PATH = BASE_DIR + "/logs"
     if not os.path.exists(LOGS_PATH):
         os.mkdir(LOGS_PATH)
        
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     
-    handler = logging.FileHandler(LOGS_PATH + "\\\%s.txt" % logname)
+    handler = logging.FileHandler(LOGS_PATH + "/%s.txt" % logname)
     handler.setLevel(logging.INFO)
     fmt = logging.Formatter('%(asctime)s - %(levelname)s: %(message)s')
     handler.setFormatter(fmt)
