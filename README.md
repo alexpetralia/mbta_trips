@@ -17,4 +17,4 @@ Trips may sometimes appear, then disappear seconds or minutes later, only to rea
 #### License ####
 
 Distributed under the MIT License.
-See more at: [(https://opensource.org/licenses/MIT)]
+See more at: [https://opensource.org/licenses/MIT](https://opensource.org/licenses/MIT)
