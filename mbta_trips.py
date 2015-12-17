@@ -1,7 +1,5 @@
 # @author: apetralia
 
-# TODO: write docstrings
-
 import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(BASE_DIR)
@@ -18,12 +16,25 @@ from trips_db import cursor, connection
 
 class Route():
     
+    """
+    Route class houses all of the Direction objects.
+    """
+    
     def __init__(self, route_name):
         self.directions = {}
         self.route_name = route_name
         
     def update_route(self, json):
-        """ TODO: Add doc string """
+        
+        """
+        Updates all of the Direction objects.
+        
+        Parameters:
+        ``json`` (list): the Requests JSON list. Root parents of json tree must be ['direction'].
+        
+        Return values:
+        ``None``
+        """
         
         for direction in json['direction']:
         
@@ -34,10 +45,7 @@ class Route():
             if not self.directions.get(direction_name):
                 self.directions[direction_name] = Direction(direction_name, self.route_name, ignored_trips)
             
-            # MBTA API initializes a trip with in the format: <vehicle_ID>_[0,1]. 
-            # The trip is then removed once the car starts moving and renamed to
-            # format: <trip_id>_[0,1]. Initialized trips should be ignored (ie.
-            # if trip_id == vehicle_id), while only moving trips should count.
+            # See `get_relevant_trips` docstring
             all_trips_json = direction['trip']
             relevant_trips = get_relevant_trips(all_trips_json)
                     
@@ -52,6 +60,10 @@ class Route():
         
 class Direction():
     
+    """
+    Direction class houses all of the Trip objects.
+    """
+    
     def __init__(self, direction_name, route_name, ignored_trips):
         self.pre_update_trips = {}
         self.updated_trips = {}
@@ -60,7 +72,16 @@ class Direction():
         self.ignored_trips = ignored_trips
     
     def update_trips(self, curr_trips_json, cursor):
-        """ TODO: Add doc string """
+        
+        """
+        Updates all of the Trip objects.
+        
+        Parameters:
+        ``curr_trips_json`` (list): the Requests JSON list. Root parents of json tree must be ['trip_id'].
+        
+        Return values:
+        ``None``
+        """
         
         new_trips, finished_trips = [], [] # for logging
         
@@ -112,7 +133,14 @@ class Direction():
                 (route_name, self.direction_name, finished_trip_ids))
                         
     def write_count_to_sql(self, curr_trips, cursor):
-        """ TODO: Add doc string """
+        
+        """
+        Takes the amount of current trips for each route and direction, then writes it to a sqlite3 database at the time that the count was checked.
+        
+        Parameters:
+        ``curr_trips`` (list): current trips housed in the Direction object
+        ``c`` (sqlite3.Cursor): the sqlite3 connection's cursor to execute SQL queries
+        """
         
         row = {"Time": format(dt.now()),
                "Count": len(curr_trips),
@@ -125,6 +153,10 @@ class Direction():
              str(row['Direction']), str(row['Route'])] )
 
 class Trip():
+    
+    """
+    Each trip that is added to the json response is created as a Trip object. 
+    """
     
     def __init__(self, trip_id, vehicle_id, location, direction, route):
         self.trip_id = trip_id
@@ -139,10 +171,20 @@ class Trip():
         self.curr_location = None
                 
     def end_trip(self):
+        
+        """
+        Once `end_trip` is called, the `duration` is evaluated as the difference between the end and start time of the trip.
+        """
+        
         self.end_time = dt.now()
         self.duration = self.end_time - self.start_time
         
     def get(self):
+        
+        """
+        Get function to return the object's attributes in dictionary-format.
+        """
+        
         return { "Trip ID": self.trip_id,
                  "Vehicle ID": self.trip_id,
                  "Start location": self.start_location,
@@ -154,10 +196,21 @@ class Trip():
                  "Duration": format(self.duration) }
                  
     def update_location(self, location):
+        
+        """
+        Updates the `end_location` as the current location. If the Trip disappears from the json response, that current location is the last known location, and therefore the end location.
+        """
+        
         self.end_location = location
         
     def write_trip_to_sql(self, cursor):
-        """ TODO: Add doc string """
+        
+        """ 
+        Once a trip is completed, it is written to the sqlite3 database.
+        
+        Parameters:
+        ``c`` (sqlite3.Cursor): the sqlite3 connection's cursor to execute SQL queries
+        """
     
         sql = ("INSERT INTO %s \
               (trip_id, vehicle_id, direction, route, start_location, \
@@ -171,6 +224,11 @@ class Trip():
         cursor.execute(sql, row)    
                                 
 def ignore_trips(response):
+    
+    """
+    At runtime, we cannot determine the 'true' start time of any trip. As a result, all of these trips should be ignored and never written to the sqlite3 database.
+    """
+    
     ignored_trips = []
     for mode in response['mode']:
         for route in mode['route']:
@@ -180,6 +238,17 @@ def ignore_trips(response):
     return ignored_trips
     
 def get_relevant_trips(all_trips_json):
+    
+    """
+    The MBTA API initializes a trip with in the format: <vehicle_ID>_[0,1]. The trip is then removed once the car starts moving and renamed to format: <trip_id>_[0,1]. Initialized trips should be ignored (ie. if trip_id == vehicle_id), while only moving trips should count. This is a known bug by the MBTA.
+    
+    Parameters:
+    ``all_trips_json`` (dict): the Requests JSON dictionary. Root parents of json tree must be ['vehicle'].
+        
+    Return values:
+    ``relevant_trips_json`` (list): a filtered list of only trips whose vehicle_ids do not equal their trip_ids
+    """
+    
     relevant_trip_ids = []
     for trip in all_trips_json:
         vehicle_id = trip['vehicle']['vehicle_id']
@@ -190,6 +259,11 @@ def get_relevant_trips(all_trips_json):
     return relevant_trips_json
     
 def get_json(url, logger):
+    
+    """
+    Function to query the MBTA API, or retry upon failure.
+    """
+    
     while True:
         try:        
             response = requests.get(url).json()
@@ -200,6 +274,14 @@ def get_json(url, logger):
             time.sleep(10)
     
 def init_logging(logname):
+    
+    """
+    Function to intialize logging with certain default settings.
+    
+    Parameters:
+    ``logname`` (str): The name of the file to which the log should be written. This is used to record each day's log individually.
+    """
+    
     LOGS_PATH = BASE_DIR + "/logs"
     if not os.path.exists(LOGS_PATH):
         os.mkdir(LOGS_PATH)
