@@ -25,7 +25,7 @@ with sqlite3.connect(DATABASE_PATH) as connection:
            CREATE TABLE %s (
                id INTEGER PRIMARY KEY,
                datetime TEXT,
-               count INTEGER,
+               count TEXT,
                direction TEXT,
                route TEXT
            )
