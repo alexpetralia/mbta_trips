@@ -94,7 +94,7 @@ class Direction():
             location = (lat, long)
             
             # If current trip already in Direction object, update the Trip's location
-            if trip_id in self.pre_update_trips.keys():
+            if trip_id in self.pre_update_trips:
                 self.pre_update_trips[trip_id].update_location(location)
             # If current trip not already in Direction object, add it as a new Trip()
             else:
@@ -105,7 +105,7 @@ class Direction():
                 
         # Check if prior trips still currently exist
         curr_trip_ids = [x['trip_id'] for x in curr_trips_json]
-        for pre_update_trip_id in self.pre_update_trips.keys():
+        for pre_update_trip_id in self.pre_update_trips:
             trip_obj = self.pre_update_trips[pre_update_trip_id]
             trip_id = trip_obj.get()['Trip ID']
             
